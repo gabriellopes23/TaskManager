@@ -18,11 +18,11 @@ struct Task: Identifiable {
 
 // MARK: - Exemplo de Tarefas
 var sampleTasks: [Task] = [
-    .init(taskTitle: "Record Video", creationDate: .updateHour(-5), isComplete: true, tint: .blue),
-    .init(taskTitle: "Redesign Website", creationDate: .updateHour(-3), tint: .red),
-    .init(taskTitle: "Go for a Walk", creationDate: .updateHour(-5), tint: .pink),
-    .init(taskTitle: "Edit Video", creationDate: .updateHour(-5), isComplete: true, tint: .yellow),
-    .init(taskTitle: "Tweet about new Video!", creationDate: .updateHour(-5), tint: .gray),
+    .init(taskTitle: "Record Video", creationDate: .updateHour(-5), isComplete: true, tint: .colorBlue),
+    .init(taskTitle: "Redesign Website", creationDate: .updateHour(-3), tint: .colorRed),
+    .init(taskTitle: "Go for a Walk", creationDate: .updateHour(-5), tint: .colorGreen),
+    .init(taskTitle: "Edit Video", creationDate: .updateHour(-5), isComplete: true, tint: .colorGray),
+    .init(taskTitle: "Tweet about new Video!", creationDate: .updateHour(-5), tint: .colorYellow),
 ]
 
 // MARK: - Extension Date

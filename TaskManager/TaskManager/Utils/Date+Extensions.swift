@@ -22,6 +22,16 @@ extension Date {
         return Calendar.current.isDateInToday(self)
     }
     
+    // Verificando se a data é a mesma hora
+    var isSameHour: Bool {
+        return Calendar.current.compare(self, to: .init(), toGranularity: .hour) == .orderedSame
+    }
+    
+    //Verificando se a data é Passada da Hora
+    var isPastHour: Bool {
+        return Calendar.current.compare(self, to: .init(), toGranularity: .hour) == .orderedAscending
+    }
+    
     // Buscando Semana com Base na Data Fornecida
     func fetchWeek(_ date: Date = .init()) -> [WeekDay] {
         let calendar = Calendar.current
@@ -38,8 +48,30 @@ extension Date {
                 week.append(.init(date: weekDay))
             }
         }
-    
+        
         return week
+    }
+    
+    // Criando a próxima semana, com base na data da última semana atual
+    func createNextWeek() -> [WeekDay] {
+        let calendar = Calendar.current
+        let startOfLastDate = calendar.startOfDay(for: self)
+        guard let nextDate = calendar.date(byAdding: .day, value: 1, to: startOfLastDate) else {
+            return []
+        }
+        
+        return fetchWeek(nextDate)
+    }
+    
+    // Criando a semana anterior, com base na data da primeira semana atual
+    func createPreviousWeek() -> [WeekDay] {
+        let calendar = Calendar.current
+        let startOfFirstDate = calendar.startOfDay(for: self)
+        guard let previousDate = calendar.date(byAdding: .day, value: -1, to: startOfFirstDate) else {
+            return []
+        }
+        
+        return fetchWeek(previousDate)
     }
     
     struct WeekDay: Identifiable {
