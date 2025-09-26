@@ -70,6 +70,9 @@ struct TaskRowView: View {
             .offset(y: -8)
             .sheet(isPresented: $showEditTask) {
                 EditTaskView(task: task)
+                    .presentationDetents([.height(300)])
+                    .interactiveDismissDisabled()
+                    .presentationBackground(.tertiary)
             }
         }
     }

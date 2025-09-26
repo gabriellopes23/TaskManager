@@ -2,7 +2,7 @@
 //  EditTaskView.swift
 //  TaskManager
 //
-//  Created by Gabriel Lopes on 25/09/25.
+//  Created by Gabriel Lopes on 26/09/25.
 //
 
 import SwiftUI
@@ -16,8 +16,6 @@ struct EditTaskView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
-            
-            // Botão de Fechar
             Button(action: {
                 dismiss()
             }) {
@@ -27,7 +25,6 @@ struct EditTaskView: View {
             }
             .hSpacing(.leading)
             
-            // Campo título
             VStack(alignment: .leading, spacing: 8) {
                 Text("Task Title")
                     .font(.caption)
@@ -36,18 +33,12 @@ struct EditTaskView: View {
                 TextField("Go for a Walk!", text: $task.taskTitle)
                     .padding(.vertical, 12)
                     .padding(.horizontal, 15)
-                    .background(
-//                        .quaternary.shadow(.drop(color: .black.opacity(0.25), radius: 2)),
-//                        in: .rect(cornerRadius: 10)
-                    )
+                    .background(.quaternary.shadow(.drop(color: .black.opacity(0.25),radius: 2)), in: .rect(cornerRadius: 10))
                     .foregroundStyle(.secondary)
             }
             .padding(.top, 5)
             
-            // Data + Cor
             HStack(spacing: 12) {
-                
-                // Data
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Task Date")
                         .font(.caption)
@@ -60,7 +51,6 @@ struct EditTaskView: View {
                 .padding(.top, 5)
                 .padding(.trailing, -15)
                 
-                // Cor
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Task Color")
                         .font(.caption)
@@ -73,15 +63,15 @@ struct EditTaskView: View {
                             Circle()
                                 .fill(Color(color))
                                 .frame(width: 20, height: 20)
-                                .background {
+                                .background(content: {
                                     Circle()
                                         .stroke(lineWidth: 2)
-                                        .opacity(task.tintColor == color ? 1 : 0)
-                                }
+                                        .opacity(task.tint == color ? 1 : 0)
+                                })
                                 .hSpacing(.center)
                                 .contentShape(.rect)
                                 .onTapGesture {
-                                    task.tintColor = color
+                                    task.tint = color
                                 }
                         }
                     }
@@ -92,32 +82,30 @@ struct EditTaskView: View {
             
             Spacer(minLength: 0)
             
-            // Botão salvar alterações
             Button(action: {
                 do {
-                    try context.save() // apenas salva alterações
+                    try context.save()
                     dismiss()
                 } catch {
                     print(error.localizedDescription)
                 }
             }) {
-                Text("Save Changes")
+                Text("Save Task")
                     .font(.title3)
                     .fontWeight(.semibold)
                     .textScale(.secondary)
                     .foregroundStyle(.black)
                     .hSpacing(.center)
                     .padding(.vertical, 12)
-                    .background(Color(task.tintColor), in: .rect(cornerRadius: 10))
+                    .background(task.tintColor, in: .rect(cornerRadius: 10))
             }
-            .disabled(task.taskTitle.isEmpty)
-            .opacity(task.taskTitle.isEmpty ? 0.5 : 1)
+            .disabled(task.taskTitle == "")
+            .opacity(task.taskTitle == "" ? 0.5 : 1)
         }
         .padding(15)
     }
 }
 
-
 #Preview {
-    EditTaskView(task: Task(id: .init(), taskTitle: "", creationDate: .init(), isComplete: false, tint: ""))
+    EditTaskView(task: Task(id: .init(), taskTitle: "", creationDate: .init(), isComplete: false, tint: "colorGreen"))
 }
