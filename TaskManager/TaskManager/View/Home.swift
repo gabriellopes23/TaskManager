@@ -13,7 +13,6 @@ struct Home: View {
     @State private var weekSlider: [[Date.WeekDay]] = []
     @State private var currentWeekIndex: Int = 1
     @State private var createWeek: Bool = false
-    @State private var tasks: [Task] = sampleTasks.sorted(by: { $0.creationDate > $1.creationDate })
     @State private var createNewTask: Bool = false
     
     // Animation namespace
@@ -26,7 +25,7 @@ struct Home: View {
             ScrollView(.vertical) {
                 VStack {
                     // Tasks View
-                    TasksView()
+                    TasksView(currentDate: $currentDate)
                 }
                 .hSpacing(.center)
                 .vSpacing(.center)
@@ -42,7 +41,7 @@ struct Home: View {
                     .fontWeight(.semibold)
                     .foregroundStyle(.white)
                     .frame(width: 55, height: 55)
-                    .background(.colorBlue.shadow(.drop(color: .black.opacity(0.25), radius: 10)), in: .circle)
+                    .background(.blue.shadow(.drop(color: .black.opacity(0.25), radius: 10)), in: .circle)
             }
             .padding(15)
         })
@@ -199,28 +198,6 @@ extension Home {
                 currentWeekIndex = weekSlider.count - 2
             }
         }
-    }
-}
-
-// MARK: - Tasks View
-extension Home {
-    @ViewBuilder
-    func TasksView() -> some View {
-        VStack(alignment: .leading, spacing: 35) {
-            ForEach($tasks) { task in
-                TaskRowView(task: task)
-                    .background(alignment: .leading) {
-                        if tasks.last?.id != task.id {
-                            Rectangle()
-                                .frame(width: 1)
-                                .offset(x: 8)
-                                .padding(.bottom, -35)
-                        }
-                    }
-            }
-        }
-        .padding([.vertical, .leading], 15)
-        .padding(.top, 15)
     }
 }
 

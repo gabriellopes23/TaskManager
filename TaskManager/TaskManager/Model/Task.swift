@@ -6,24 +6,36 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // MARK: - Task Model
-struct Task: Identifiable {
-    var id: UUID = .init()
+@Model
+class Task: Identifiable {
+    var id: UUID
     var taskTitle: String
-    var creationDate: Date = .init()
+    var creationDate: Date
     var isComplete: Bool = false
-    var tint: Color
+    var tint: String
+    
+    init(id: UUID = .init(), taskTitle: String, creationDate: Date = .init(), isComplete: Bool = false, tint: String) {
+        self.id = id
+        self.taskTitle = taskTitle
+        self.creationDate = creationDate
+        self.isComplete = isComplete
+        self.tint = tint
+    }
+    
+    var tintColor: Color {
+        switch tint {
+        case "colorBlue": return .colorBlue
+        case "colorYellow": return .colorYellow
+        case "colorGreen": return .colorGreen
+        case "colorGray": return .colorGray
+        case "colorRed": return .colorRed
+        default: return .black
+        }
+    }
 }
-
-// MARK: - Exemplo de Tarefas
-var sampleTasks: [Task] = [
-    .init(taskTitle: "Record Video", creationDate: .updateHour(-5), isComplete: true, tint: .colorBlue),
-    .init(taskTitle: "Redesign Website", creationDate: .updateHour(-3), tint: .colorRed),
-    .init(taskTitle: "Go for a Walk", creationDate: .updateHour(-5), tint: .colorGreen),
-    .init(taskTitle: "Edit Video", creationDate: .updateHour(-5), isComplete: true, tint: .colorGray),
-    .init(taskTitle: "Tweet about new Video!", creationDate: .updateHour(-5), tint: .colorYellow),
-]
 
 // MARK: - Extension Date
 extension Date {

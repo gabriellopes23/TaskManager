@@ -1,23 +1,23 @@
 //
-//  NewTaskView.swift
+//  EditTaskView.swift
 //  TaskManager
 //
-//  Created by Gabriel Lopes on 24/09/25.
+//  Created by Gabriel Lopes on 25/09/25.
 //
 
 import SwiftUI
 import SwiftData
 
-struct NewTaskView: View {
+struct EditTaskView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.modelContext) var context
     
-    @State private var taskTitle: String = ""
-    @State private var taskDate: Date = .init()
-    @State private var taskColor: String = "colorGreen"
+    @Bindable var task: Task
     
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
+            
+            // Botão de Fechar
             Button(action: {
                 dismiss()
             }) {
@@ -27,32 +27,40 @@ struct NewTaskView: View {
             }
             .hSpacing(.leading)
             
+            // Campo título
             VStack(alignment: .leading, spacing: 8) {
                 Text("Task Title")
                     .font(.caption)
                     .foregroundStyle(.gray)
                 
-                TextField("Go for a Walk!", text: $taskTitle)
+                TextField("Go for a Walk!", text: $task.taskTitle)
                     .padding(.vertical, 12)
                     .padding(.horizontal, 15)
-                    .background(.quaternary.shadow(.drop(color: .black.opacity(0.25),radius: 2)), in: .rect(cornerRadius: 10))
+                    .background(
+//                        .quaternary.shadow(.drop(color: .black.opacity(0.25), radius: 2)),
+//                        in: .rect(cornerRadius: 10)
+                    )
                     .foregroundStyle(.secondary)
             }
             .padding(.top, 5)
             
+            // Data + Cor
             HStack(spacing: 12) {
+                
+                // Data
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Task Date")
                         .font(.caption)
                         .foregroundStyle(.gray)
                     
-                    DatePicker("", selection: $taskDate)
+                    DatePicker("", selection: $task.creationDate)
                         .datePickerStyle(.compact)
                         .scaleEffect(0.9, anchor: .leading)
                 }
                 .padding(.top, 5)
                 .padding(.trailing, -15)
                 
+                // Cor
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Task Color")
                         .font(.caption)
@@ -65,15 +73,15 @@ struct NewTaskView: View {
                             Circle()
                                 .fill(Color(color))
                                 .frame(width: 20, height: 20)
-                                .background(content: {
+                                .background {
                                     Circle()
                                         .stroke(lineWidth: 2)
-                                        .opacity(taskColor == color ? 1 : 0)
-                                })
+                                        .opacity(task.tintColor == color ? 1 : 0)
+                                }
                                 .hSpacing(.center)
                                 .contentShape(.rect)
                                 .onTapGesture {
-                                    taskColor = color
+                                    task.tintColor = color
                                 }
                         }
                     }
@@ -84,33 +92,32 @@ struct NewTaskView: View {
             
             Spacer(minLength: 0)
             
+            // Botão salvar alterações
             Button(action: {
-                let task =  Task(taskTitle: taskTitle, creationDate: taskDate, tint: taskColor)
                 do {
-                    context.insert(task)
-                    try context.save()
+                    try context.save() // apenas salva alterações
                     dismiss()
                 } catch {
                     print(error.localizedDescription)
                 }
             }) {
-                Text("Create Task")
+                Text("Save Changes")
                     .font(.title3)
                     .fontWeight(.semibold)
                     .textScale(.secondary)
                     .foregroundStyle(.black)
                     .hSpacing(.center)
                     .padding(.vertical, 12)
-                    .background(Color(taskColor), in: .rect(cornerRadius: 10))
+                    .background(Color(task.tintColor), in: .rect(cornerRadius: 10))
             }
-            .disabled(taskTitle == "")
-            .opacity(taskTitle == "" ? 0.5 : 1)
+            .disabled(task.taskTitle.isEmpty)
+            .opacity(task.taskTitle.isEmpty ? 0.5 : 1)
         }
         .padding(15)
     }
 }
 
+
 #Preview {
-    NewTaskView()
-        .vSpacing(.bottom)
+    EditTaskView(task: Task(id: .init(), taskTitle: "", creationDate: .init(), isComplete: false, tint: ""))
 }
