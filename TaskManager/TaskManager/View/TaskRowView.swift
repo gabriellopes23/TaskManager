@@ -29,7 +29,9 @@ struct TaskRowView: View {
                 Text(task.taskTitle)
                     .font(.title3)
                     .fontWeight(.bold)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.1)
                 
                 HStack {
                     Label(task.creationDate.format("hh:mm a"), systemImage: "clock")
@@ -40,7 +42,7 @@ struct TaskRowView: View {
                         .fill(.gray)
                         .frame(width: 4, height: 4)
                     
-                    Label(title: { Text(task.category.name) }, icon: { Text(task.category.icon) })
+                    Label(title: { Text(task.category.rawValue) }, icon: { Text(task.category.icon) })
                         .font(.caption)
                         .foregroundStyle(.gray)
                     
@@ -51,6 +53,12 @@ struct TaskRowView: View {
                     .foregroundStyle(.gray)
                 
             }
+            
+            Spacer()
+            
+            Text(task.priority.icon)
+                .font(.caption2)
+                .opacity(0.8)
         }
         .padding(15)
         .hSpacing(.leading)

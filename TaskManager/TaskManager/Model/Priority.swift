@@ -8,14 +8,17 @@
 import Foundation
 import SwiftData
 
-@Model
-class Priority {
-    var name: String
+
+enum Priority: String, Codable, CaseIterable {
+    case baixa = "Baixa"
+    case media = "Média"
+    case alta = "Alta"
     
-    var icon: String
-    
-    init(name: String, icon: String) {
-        self.name = name
-        self.icon = icon
+    var icon: String {
+        switch self {
+        case .baixa: return "🟢"
+        case .media: return "🟡"
+        case .alta: return "🔴"
+        }
     }
 }

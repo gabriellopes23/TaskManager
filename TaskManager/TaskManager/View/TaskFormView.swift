@@ -29,23 +29,13 @@ struct TaskFormView: View {
     
     init(task: Task? = nil) {
         let defaultCategories: [Category] = [
-            Category(name: "Trabalho", icon: "💼"),
-            Category(name: "Estudos", icon: "📚"),
-            Category(name: "Pessoal", icon: "👤"),
-            Category(name: "Saúde", icon: "❤️"),
-            Category(name: "Compras", icon: "🛒"),
-            Category(name: "Lazer", icon: "🎮")
+            .trabalho, .estudo, .pessoal, .saude, .compras, .lazer
         ]
         let defaultRepeatOptions: [Repeat] = [
-            .nunca,
-            .diaria,
-            .semanal,
-            .mensal
+            .nunca, .diaria, .semanal, .mensal
         ]
         let defaultPriorities: [Priority] = [
-            Priority(name: "Baixa", icon: "🟢"),
-            Priority(name: "Média", icon: "🟡"),
-            Priority(name: "Alta", icon: "🔴"),
+            .baixa, .media, . alta
         ]
         
         self.categories = defaultCategories
@@ -115,6 +105,7 @@ extension TaskFormView {
                             .fill(.red.opacity(0.3))
                             .frame(width: 35, height: 35)
                     }
+                    .padding(.horizontal, 8)
             }
         }
         .padding(.horizontal, 2)
@@ -170,9 +161,9 @@ extension TaskFormView {
                     VStack(spacing: 5) {
                         Text(category.icon)
                             .font(.largeTitle)
-                        Text(category.name)
+                        Text(category.rawValue)
                             .font(.headline)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(taskCategory == category ? .white : .colorTextForm)
                     }
                     .modifier(GridSelectedModifier(color: taskCategory == category ? .colorGridCategory : .colorGrid))
                 }
@@ -198,7 +189,7 @@ extension TaskFormView {
                             .frame(width: 8, height: 8)
                             .opacity(taskColor == color ? 1 : 0)
                         Circle()
-                            .stroke(.white, lineWidth: 2)
+                            .stroke(.colorTextForm, lineWidth: 2)
                             .opacity(taskColor == color ? 1 : 0)
                     }
                     .onTapGesture {
@@ -226,7 +217,7 @@ extension TaskFormView {
                         Text(option.icon)
                         Text(option.rawValue)
                             .font(.headline)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(taskRepeat == option ? .white : .colorTextForm)
                             .lineLimit(1)
                             .minimumScaleFactor(0.1)
                     }
@@ -251,9 +242,9 @@ extension TaskFormView {
                     HStack {
                         Text(priority.icon)
                             .font(.caption)
-                        Text(priority.name)
+                        Text(priority.rawValue)
                             .font(.headline)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(taskPriority == priority ? .white : .colorTextForm)
                     }
                     .modifier(GridSelectedModifier(color: taskPriority == priority ? .colorGridPriority : .colorGrid))
                 }

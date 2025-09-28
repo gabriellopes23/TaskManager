@@ -56,6 +56,6 @@ extension Date {
 
 
 var DummyData: [Task] = [
-    .init(taskTitle: "Programar Task Manager", taskDescription: "Task Manager", creationDate: .init(), isComplete: false, tint: "colorBlue", category: Category(name: "Estudos", icon: "📚"), repeatOptions: .nunca, priority: Priority(name: "Baixa", icon: "")),
-    .init(taskTitle: "Programar", taskDescription: "Task Manager", creationDate: .init(), isComplete: false, tint: "colorPurple", category: Category(name: "Estudos", icon: "📚"), repeatOptions: .nunca, priority: Priority(name: "Baixa", icon: ""))
+    .init(taskTitle: "Programar Task Manager", taskDescription: "Task Manager", creationDate: .init(), isComplete: false, tint: "colorBlue", category: .estudo, repeatOptions: .nunca, priority: .baixa),
+    .init(taskTitle: "Programar", taskDescription: "Task Manager", creationDate: .init(), isComplete: false, tint: "colorPurple", category: .estudo, repeatOptions: .nunca, priority: .alta)
 ]

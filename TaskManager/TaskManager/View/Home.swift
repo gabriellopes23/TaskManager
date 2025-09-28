@@ -15,19 +15,27 @@ struct Home: View {
     @State private var createWeek: Bool = false
     @State private var createNewTask: Bool = false
     @State private var searchTask: String = ""
+    @State private var categoryFilter: String = ""
+    @State private var showTaskFilter: Bool = false
     
     // Animation namespace
     @Namespace private var animation
+    
+    let categories: [Category] = [
+        .trabalho, .estudo, .pessoal, .saude, .compras, .lazer
+    ]
+    let colors: [String] = ["colorBlue", "colorGreen", "colorRed", "colorYellow", "colorPurple", "colorOrange"]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HeaderView()
             
-            serchTextView()
+            SerchTextView()
+            CategoryFilterView()
             
             ScrollView(.vertical) {
                 // Tasks View
-                TasksView(currentDate: $currentDate, searchTask: $searchTask)
+                TasksView(currentDate: $currentDate, searchTask: $searchTask, categoryFilter: $categoryFilter)
             }
             .hSpacing(.center)
             .vSpacing(.center)
@@ -42,7 +50,7 @@ struct Home: View {
                     .fontWeight(.semibold)
                     .foregroundStyle(.white)
                     .frame(width: 55, height: 55)
-                    .background(.blue.shadow(.drop(color: .black.opacity(0.25), radius: 10)), in: .circle)
+                    .background(.colorGridCategory.shadow(.drop(color: .black.opacity(0.25), radius: 16)), in: .circle)
             }
             .padding(15)
         })
@@ -117,18 +125,68 @@ extension Home {
 // MARK: - SearchTextView
 extension Home {
     @ViewBuilder
-    func serchTextView() -> some View {
+    func SerchTextView() -> some View {
         HStack {
             Image(systemName: "magnifyingglass")
             TextField("Buscar tarefas...", text: $searchTask)
-            Button(action: {}) {
+            Button(action: {
+                withAnimation {
+                    showTaskFilter.toggle()
+                }
+            }) {
                 Image(systemName: "line.3.horizontal.decrease")
+                    .padding(6)
+                    .foregroundStyle(showTaskFilter ? .white : .secondary)
+                    .background(showTaskFilter ? .colorBlue : .clear, in: .rect(cornerRadius: 8))
             }
         }
         .padding()
-        .foregroundStyle(.white)
+        .foregroundStyle(.secondary)
         .background(.colorGrid, in: .rect(cornerRadius: 16))
         .padding(.horizontal)
+    }
+}
+
+// MARK: - CategoryFilterView
+extension Home {
+    @ViewBuilder
+    func CategoryFilterView() -> some View {
+        if showTaskFilter {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Categorias")
+                    .font(.footnote)
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 70))]) {
+                    ForEach(categories.enumerated(), id: \.1) { index, category in
+                        Button(action: {
+                            withAnimation {
+                                categoryFilter = category.rawValue
+                            }
+                        }) {
+                            Text(category.rawValue)
+                                .padding(.horizontal)
+                                .padding(.vertical, 8)
+                                .font(.caption)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.1)
+                                .foregroundStyle(categoryFilter == category.rawValue ? .white : .colorTextForm)
+                                .background(categoryFilter == category.rawValue ? Color(colors[index])  : .colorGridPriority.opacity(0.3), in: .rect(cornerRadius: 16))
+                        }
+                    }
+                }
+                
+                Button(action: {
+                    categoryFilter = ""
+                }) {
+                    Label("Limpar filtros", systemImage: "xmark")
+                        .font(.footnote)
+                        .foregroundStyle(.red)
+                }
+            }
+            .padding()
+            .background(.colorGrid, in: .rect(cornerRadius: 16))
+            .padding()
+            .animation(.linear, value: showTaskFilter)
+        }
     }
 }
 
@@ -149,12 +207,12 @@ extension Home {
                         .font(.headline)
                         .fontWeight(.bold)
                         .textScale(.secondary)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(isSameDate(day.date, currentDate) ? .white : .secondary)
                         .frame(width: 45, height: 45)
                         .background {
                             if isSameDate(day.date, currentDate) {
                                 Circle()
-                                    .fill(.blue)
+                                    .fill(.colorGridCategory)
                                     .matchedGeometryEffect(id: "TABINDICATOR", in: animation)
                             }
                         }

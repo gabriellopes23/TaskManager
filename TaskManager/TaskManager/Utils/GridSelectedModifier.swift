@@ -14,6 +14,7 @@ struct GridSelectedModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .padding()
+            .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity)
             .background(color, in: .rect(cornerRadius: 10))
     }

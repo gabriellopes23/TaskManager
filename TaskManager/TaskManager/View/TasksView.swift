@@ -12,13 +12,15 @@ struct TasksView: View {
     
     @Binding var currentDate: Date
     @Binding var searchTask: String
+    @Binding var categoryFilter: String
     
     // SwiftDat Dynamic Query
     @Query private var tasks: [Task]
     
-    init(currentDate: Binding<Date>, searchTask: Binding<String>) {
+    init(currentDate: Binding<Date>, searchTask: Binding<String>, categoryFilter: Binding<String>) {
         self._currentDate = currentDate
         self._searchTask = searchTask
+        self._categoryFilter = categoryFilter
         
         // Predicate
         let calendar = Calendar.current
@@ -35,10 +37,17 @@ struct TasksView: View {
     }
     
     var filteredTasks: [Task] {
-        if searchTask.isEmpty {
-            return tasks
-        } else {
-            return tasks.filter { $0.taskTitle.localizedCaseInsensitiveContains(searchTask) }
+        tasks.filter { task in
+            let matchesSearch = searchTask.isEmpty || task.taskTitle.localizedCaseInsensitiveContains(searchTask)
+            let matchesCategory = categoryFilter.isEmpty || task.category.rawValue.contains(categoryFilter)
+            
+            return matchesSearch && matchesCategory
+        }
+        .sorted {
+            if $0.isComplete == $1.isComplete {
+                return $0.creationDate < $1.creationDate
+            }
+            return !$0.isComplete && $1.isComplete
         }
     }
     
@@ -47,11 +56,13 @@ struct TasksView: View {
             ContentUnavailableView {
                 Image(systemName: "clipboard")
                     .padding()
+                    .font(.title)
+                    .fontWeight(.bold)
                     .background(.colorGrid, in: .circle)
                 Text("Nenhuma Tarefa para Hoje")
                     .font(.headline)
                 Text("Toque no + para criar uma nova tarefa")
-                    .font(.caption)
+                    .font(.footnote)
             }
             .foregroundStyle(.gray)
         } else {
@@ -66,5 +77,5 @@ struct TasksView: View {
 }
 
 #Preview {
-    TasksView(currentDate: .constant(.init()), searchTask: .constant(""))
+    TasksView(currentDate: .constant(.init()), searchTask: .constant(""), categoryFilter: .constant(""))
 }

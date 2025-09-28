@@ -8,13 +8,26 @@
 import Foundation
 import SwiftData
 
-@Model
-class Category {
-    var name: String
-    var icon: String
+enum Category: String, CaseIterable, Codable {
+    case trabalho = "Trabalho"
+    case estudo = "Estudos"
+    case pessoal = "Pessoal"
+    case saude = "Saúde"
+    case compras = "Compras"
+    case lazer = "Lazer"
     
-    init(name: String, icon: String) {
-        self.name = name
-        self.icon = icon
+    var icon: String {
+        switch self {
+        case .trabalho: return "💼"
+        case .estudo: return "📚"
+        case .pessoal: return "👤"
+        case .saude: return "❤️"
+        case .compras: return "🛒"
+        case .lazer: return "🎮"
+        }
     }
 }
+
+
+
+
