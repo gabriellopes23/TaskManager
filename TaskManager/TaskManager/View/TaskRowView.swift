@@ -29,7 +29,8 @@ struct TaskRowView: View {
                 Text(task.taskTitle)
                     .font(.title3)
                     .fontWeight(.bold)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.colorTextForm)
+                    .opacity(task.isComplete ? 0.8 : 1)
                     .lineLimit(1)
                     .minimumScaleFactor(0.1)
                 
@@ -64,10 +65,11 @@ struct TaskRowView: View {
         .hSpacing(.leading)
         .background(.colorGrid, in: .rect(cornerRadius: 16))
         .strikethrough(task.isComplete, pattern: .solid, color: .black)
-        .overlay(content: {
-            RoundedRectangle(cornerRadius: 16)
-                .fill(.colorGrid.opacity(task.isComplete ? 0.5 : 0))
-        })
+        .opacity(task.isComplete ? 0.9 : 1)
+//        .overlay(content: {
+//            RoundedRectangle(cornerRadius: 16)
+//                .fill(.colorGrid.opacity(task.isComplete ? 0.5 : 0))
+//        })
         .contentShape(Rectangle())
         .offset(x: dragOffset.width + position.width)
         .animation(.linear, value: dragOffset)
