@@ -11,12 +11,14 @@ import SwiftData
 struct TasksView: View {
     
     @Binding var currentDate: Date
+    @Binding var searchTask: String
     
     // SwiftDat Dynamic Query
     @Query private var tasks: [Task]
     
-    init(currentDate: Binding<Date>) {
+    init(currentDate: Binding<Date>, searchTask: Binding<String>) {
         self._currentDate = currentDate
+        self._searchTask = searchTask
         
         // Predicate
         let calendar = Calendar.current
@@ -32,33 +34,37 @@ struct TasksView: View {
         self._tasks = Query(filter: predicate, sort: sortDescriptor, animation: .snappy)
     }
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: 35) {
-            ForEach(tasks) { task in
-                TaskRowView(task: task)
-                    .background(alignment: .leading) {
-                        if tasks.last?.id != task.id {
-                            Rectangle()
-                                .frame(width: 1)
-                                .offset(x: 8)
-                                .padding(.bottom, -35)
-                        }
-                    }
-            }
+    var filteredTasks: [Task] {
+        if searchTask.isEmpty {
+            return tasks
+        } else {
+            return tasks.filter { $0.taskTitle.localizedCaseInsensitiveContains(searchTask) }
         }
-        .padding([.vertical, .leading], 15)
-        .padding(.top, 15)
-        .overlay {
-            if tasks.isEmpty {
-                Text("No Task's Found")
+    }
+    
+    var body: some View {
+        if tasks.isEmpty {
+            ContentUnavailableView {
+                Image(systemName: "clipboard")
+                    .padding()
+                    .background(.colorGrid, in: .circle)
+                Text("Nenhuma Tarefa para Hoje")
                     .font(.headline)
-                    .foregroundStyle(.gray)
-                    .frame(width: 150)
+                Text("Toque no + para criar uma nova tarefa")
+                    .font(.caption)
             }
+            .foregroundStyle(.gray)
+        } else {
+            VStack(alignment: .leading) {
+                ForEach(filteredTasks) { task in
+                    TaskRowView(task: task)
+                }
+            }
+            .padding()
         }
     }
 }
 
 #Preview {
-    TasksView(currentDate: .constant(.init()))
+    TasksView(currentDate: .constant(.init()), searchTask: .constant(""))
 }

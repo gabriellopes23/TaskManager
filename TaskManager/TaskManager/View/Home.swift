@@ -14,6 +14,7 @@ struct Home: View {
     @State private var currentWeekIndex: Int = 1
     @State private var createWeek: Bool = false
     @State private var createNewTask: Bool = false
+    @State private var searchTask: String = ""
     
     // Animation namespace
     @Namespace private var animation
@@ -22,14 +23,14 @@ struct Home: View {
         VStack(alignment: .leading, spacing: 0) {
             HeaderView()
             
+            serchTextView()
+            
             ScrollView(.vertical) {
-                VStack {
-                    // Tasks View
-                    TasksView(currentDate: $currentDate)
-                }
-                .hSpacing(.center)
-                .vSpacing(.center)
+                // Tasks View
+                TasksView(currentDate: $currentDate, searchTask: $searchTask)
             }
+            .hSpacing(.center)
+            .vSpacing(.center)
             .scrollIndicators(.hidden)
         }
         .vSpacing(.top)
@@ -61,10 +62,9 @@ struct Home: View {
             }
         }
         .sheet(isPresented: $createNewTask) {
-            NewTaskView()
-                .presentationDetents([.height(300)])
+            TaskFormView()
+                .presentationDetents([.fraction(0.9)])
                 .interactiveDismissDisabled()
-                .presentationBackground(.tertiary)
         }
     }
 }
@@ -114,13 +114,31 @@ extension Home {
     }
 }
 
+// MARK: - SearchTextView
+extension Home {
+    @ViewBuilder
+    func serchTextView() -> some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+            TextField("Buscar tarefas...", text: $searchTask)
+            Button(action: {}) {
+                Image(systemName: "line.3.horizontal.decrease")
+            }
+        }
+        .padding()
+        .foregroundStyle(.white)
+        .background(.colorGrid, in: .rect(cornerRadius: 16))
+        .padding(.horizontal)
+    }
+}
+
 // MARK: - WeekView
 extension Home {
     @ViewBuilder
     func WeekView(_ week: [Date.WeekDay]) -> some View {
         HStack(spacing: 0) {
             ForEach(week) { day in
-                VStack(spacing: 8) {
+                VStack(spacing: 5) {
                     Text(day.date.format("E"))
                         .font(.callout)
                         .fontWeight(.medium)
@@ -128,28 +146,18 @@ extension Home {
                         .foregroundStyle(.gray)
                     
                     Text(day.date.format("dd"))
-                        .font(.callout)
+                        .font(.headline)
                         .fontWeight(.bold)
                         .textScale(.secondary)
-                        .foregroundStyle(isSameDate(day.date, currentDate) ? .white : .gray)
-                        .frame(width: 35, height: 35)
+                        .foregroundStyle(.white)
+                        .frame(width: 45, height: 45)
                         .background {
                             if isSameDate(day.date, currentDate) {
                                 Circle()
                                     .fill(.blue)
                                     .matchedGeometryEffect(id: "TABINDICATOR", in: animation)
                             }
-                            
-                            // Indicador pra mostar qual é a data de hoje
-                            if day.date.isToday {
-                                Circle()
-                                    .fill(.cyan)
-                                    .frame(width: 5, height: 5)
-                                    .vSpacing(.bottom)
-                                    .offset(y: 12)
-                            }
                         }
-                        .background(.white.shadow(.drop(radius: 1)), in: .circle)
                 }
                 .hSpacing(.center)
                 .contentShape(.rect)
