@@ -17,6 +17,7 @@ struct Home: View {
     @State private var searchTask: String = ""
     @State private var categoryFilter: String = ""
     @State private var showTaskFilter: Bool = false
+    @State private var showStatisticView: Bool = false
     
     // Animation namespace
     @Namespace private var animation
@@ -27,52 +28,67 @@ struct Home: View {
     let colors: [String] = ["colorBlue", "colorGreen", "colorRed", "colorYellow", "colorPurple", "colorOrange"]
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HeaderView()
-            
-            SerchTextView()
-            CategoryFilterView()
-            
-            ScrollView(.vertical) {
-                // Tasks View
-                TasksView(currentDate: $currentDate, searchTask: $searchTask, categoryFilter: $categoryFilter)
-            }
-            .hSpacing(.center)
-            .vSpacing(.center)
-            .scrollIndicators(.hidden)
-        }
-        .vSpacing(.top)
-        .overlay(alignment: .bottomTrailing, content: {
-            Button {
-                createNewTask.toggle()
-            } label: {
-                Image(systemName: "plus")
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.white)
-                    .frame(width: 55, height: 55)
-                    .background(.colorGridCategory.shadow(.drop(color: .black.opacity(0.25), radius: 16)), in: .circle)
-            }
-            .padding(15)
-        })
-        .onAppear {
-            if weekSlider.isEmpty {
-                let currentWeek = Date().fetchWeek()
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 0) {
+                HeaderView()
                 
-                if let firstDate = currentWeek.first?.date {
-                    weekSlider.append(firstDate.createPreviousWeek())
+                SerchTextView()
+                CategoryFilterView()
+                
+                ScrollView(.vertical) {
+                    // Tasks View
+                    TasksView(currentDate: $currentDate, searchTask: $searchTask, categoryFilter: $categoryFilter)
                 }
-                
-                weekSlider.append(currentWeek)
-                
-                if let lastDate = currentWeek.last?.date {
-                    weekSlider.append(lastDate.createNextWeek())
+                .hSpacing(.center)
+                .vSpacing(.center)
+                .scrollIndicators(.hidden)
+            }
+            .vSpacing(.top)
+            .overlay(alignment: .bottomTrailing, content: {
+                Button {
+                    createNewTask.toggle()
+                } label: {
+                    Image(systemName: "plus")
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.white)
+                        .frame(width: 55, height: 55)
+                        .background(.colorGridCategory.shadow(.drop(color: .black.opacity(0.25), radius: 16)), in: .circle)
+                }
+                .padding(15)
+            })
+            .overlay(alignment: .topTrailing, content: {
+                Button(action: {
+                    showStatisticView.toggle()
+                }) {
+                    Image(systemName: "chart.bar.yaxis")
+                        .padding()
+                        .foregroundStyle(.colorTextForm)
+                        .font(.title3)
+                }
+            })
+            .onAppear {
+                if weekSlider.isEmpty {
+                    let currentWeek = Date().fetchWeek()
+                    
+                    if let firstDate = currentWeek.first?.date {
+                        weekSlider.append(firstDate.createPreviousWeek())
+                    }
+                    
+                    weekSlider.append(currentWeek)
+                    
+                    if let lastDate = currentWeek.last?.date {
+                        weekSlider.append(lastDate.createNextWeek())
+                    }
                 }
             }
-        }
-        .sheet(isPresented: $createNewTask) {
-            TaskFormView()
-                .presentationDetents([.fraction(0.9)])
-                .interactiveDismissDisabled()
+            .sheet(isPresented: $createNewTask) {
+                TaskFormView()
+                    .presentationDetents([.fraction(0.9)])
+                    .interactiveDismissDisabled()
+            }
+            .navigationDestination(isPresented: $showStatisticView) {
+                StatisticView()
+            }
         }
     }
 }

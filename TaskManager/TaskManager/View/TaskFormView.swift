@@ -267,7 +267,17 @@ extension TaskFormView {
                 task.repeatOptions = taskRepeat
                 task.priority = taskPriority
             } else {
-                let newTask = Task(taskTitle: taskTitle, taskDescription: taskDescription, creationDate: taskDate, tint: taskColor, category: taskCategory, repeatOptions: taskRepeat, priority: taskPriority)
+                let newTask = Task(
+                    taskTitle: taskTitle,
+                    taskDescription: taskDescription,
+                    creationDate: taskDate,
+                    tint: taskColor,
+                    category: taskCategory,
+                    repeatOptions: taskRepeat,
+                    priority: taskPriority,
+                    parentTaskID: nil,
+                    isRecurringInstance: false
+                )
                 context.insert(newTask)
             }
             

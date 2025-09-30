@@ -47,6 +47,14 @@ struct TaskRowView: View {
                         .font(.caption)
                         .foregroundStyle(.gray)
                     
+                    Circle()
+                        .fill(.gray)
+                        .frame(width: 4, height: 4)
+                    
+                    Label(task.repeatOptionRawValue, systemImage: "arrow.trianglehead.counterclockwise")
+                        .font(.caption)
+                        .foregroundStyle(.gray)
+                    
                 }
                 
                 Text(task.taskDescription ?? "")
@@ -66,10 +74,6 @@ struct TaskRowView: View {
         .background(.colorGrid, in: .rect(cornerRadius: 16))
         .strikethrough(task.isComplete, pattern: .solid, color: .black)
         .opacity(task.isComplete ? 0.9 : 1)
-//        .overlay(content: {
-//            RoundedRectangle(cornerRadius: 16)
-//                .fill(.colorGrid.opacity(task.isComplete ? 0.5 : 0))
-//        })
         .contentShape(Rectangle())
         .offset(x: dragOffset.width + position.width)
         .animation(.linear, value: dragOffset)
@@ -95,6 +99,7 @@ struct TaskRowView: View {
                     task.isComplete.toggle()
                     dragOffset = .zero
                     position = .zero
+                    task.updateNotication()
                 }
             }, image: "checkmark", title: "Concluir", color: .green)
 
@@ -109,6 +114,7 @@ struct TaskRowView: View {
                     do {
                         context.delete(task)
                         try context.save()
+                        task.cancelTaskNotification()
                     } catch {
                         print("Não foi possivel deletar a task: \(error.localizedDescription)")
                     }
