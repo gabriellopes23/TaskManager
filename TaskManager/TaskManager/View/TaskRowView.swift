@@ -16,6 +16,7 @@ struct TaskRowView: View {
     @State private var showEditTask: Bool = false
     @State private var dragOffset: CGSize = .zero
     @State private var position: CGSize = .zero
+    @State private var isHorizontalDrag: Bool = false
     
     var body: some View {
         HStack(alignment: .top, spacing: 15) {
@@ -77,21 +78,40 @@ struct TaskRowView: View {
         .contentShape(Rectangle())
         .offset(x: dragOffset.width + position.width)
         .animation(.linear, value: dragOffset)
-        .gesture(
-            DragGesture()
-                .onChanged({ value in
-                    dragOffset = value.translation
-                })
-                .onEnded({ value in
-                    if dragOffset.width > 40 {
-                        position.width = 120
-                    } else if dragOffset.width < -40 {
-                        position.width = -170
-                    } else {
-                        position.width = 0
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 10, coordinateSpace: .local)
+                .onChanged { value in
+                    // Verifica se já decidiu a direção
+                    if !isHorizontalDrag {
+                        // Decide se é horizontal ou vertical
+                        if abs(value.translation.width) > abs(value.translation.height) {
+                            isHorizontalDrag = true
+                        } else {
+                            // É vertical → não intercepta
+                            isHorizontalDrag = false
+                            return
+                        }
                     }
+                    
+                    if isHorizontalDrag {
+                        dragOffset = value.translation
+                    }
+                }
+                .onEnded { value in
+                    if isHorizontalDrag {
+                        if dragOffset.width > 40 {
+                            position.width = 120
+                        } else if dragOffset.width < -40 {
+                            position.width = -170
+                        } else {
+                            position.width = 0
+                        }
+                    }
+                    
+                    // Reseta
                     dragOffset = .zero
-                })
+                    isHorizontalDrag = false
+                }
         )
         .background(alignment: .leading, content: {
             SwipeButtonsActions(action: {
@@ -101,8 +121,20 @@ struct TaskRowView: View {
                     position = .zero
                     task.updateNotication()
                 }
+                
+                if task.isComplete {
+                    task.completeDate = Date()
+                } else {
+                    task.completeDate = nil
+                }
+                
+                do {
+                    try context.save()
+                } catch {
+                    print(error.localizedDescription)
+                }
             }, image: "checkmark", title: "Concluir", color: .green)
-
+            
         })
         .background(alignment: .trailing, content: {
             HStack {
@@ -119,7 +151,7 @@ struct TaskRowView: View {
                         print("Não foi possivel deletar a task: \(error.localizedDescription)")
                     }
                 }, image: "trash", title: "Deletar", color: .red)
-
+                
             }
             
         })
@@ -127,6 +159,7 @@ struct TaskRowView: View {
             TaskFormView(task: task)
                 .presentationDetents([.fraction(0.9)])
         }
+        
     }
 }
 

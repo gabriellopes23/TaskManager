@@ -6,18 +6,82 @@
 //
 
 import SwiftUI
+import Charts
+import SwiftData
+
+enum TypeChart: String, CaseIterable {
+    case semanal
+    case mensal
+}
 
 struct StatisticView: View {
+    @Query var tasks: [Task]
+    
+    @State private var selectedPeriod: TypeChart = .semanal
+    
     var body: some View {
-        VStack {
+        let totalCompleted = tasks.completedTasks.count
+        let weeklyCompleted = tasks.completedThisWeek().count
+        let monthlyCompleted = tasks.completedThisMonth().count
+        let completionRate = tasks.completionRate
+        
+        VStack(spacing: 20) {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))]) {
-                StatisticItem(title: "Total Concluídas", image: "checkmark.circle", value: "2", color: .colorGreen)
-                StatisticItem(title: "Taxa de Conclusão", image: "chart.pie", value: "13%", color: .colorBlue)
-                StatisticItem(title: "Concluídas (Semana)", image: "calendar", value: "2", color: .colorPurple)
-                StatisticItem(title: "Concluídas (Mês)", image: "chart.line.uptrend.xyaxis", value: "2", color: .colorOrange)
+                StatisticItem(
+                    title: "Total Concluídas",
+                    image: "checkmark.circle",
+                    value: "\(totalCompleted)",
+                    color: .colorGreen)
+                
+                StatisticItem(
+                    title: "Taxa de Conclusão",
+                    image: "chart.pie",
+                    value: "\(completionRate)",
+                    color: .colorBlue)
+                
+                StatisticItem(
+                    title: "Concluídas (Semana)",
+                              image: "calendar",
+                    value: "\(weeklyCompleted)",
+                    color: .colorPurple)
+                
+                StatisticItem(
+                    title: "Concluídas (Mês)",
+                    image: "chart.line.uptrend.xyaxis",
+                    value: "\(monthlyCompleted)",
+                    color: .colorOrange)
+            }
+            
+            Spacer()
+            
+            VStack(alignment: .leading) {
+                HStack(spacing: 0) {
+                    Text("Progresso de Tarefas")
+                        .font(.headline)
+                    Picker("gege", selection: $selectedPeriod) {
+                        ForEach(TypeChart.allCases, id: \.self) { period in
+                            Text(period.rawValue).tag(period)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal)
+                }
+                
+                
+                Chart {
+                    ForEach(selectedPeriod == .semanal ? Array(tasks.completedGroupedByWeekday().keys) : Array(tasks.completeGroupedByMonth().keys) , id: \.self) { key in
+                        if let count = selectedPeriod == .semanal ? tasks.completedGroupedByWeekday()[key] : tasks.completeGroupedByMonth()[key] {
+                            BarMark(
+                                x: .value(selectedPeriod == .semanal ? "Dia" : "Mês", key),
+                                y: .value("Concluídas", count))
+                        }
+                    }
+                }
             }
             .padding()
+            .background(.colorGrid, in: .rect(cornerRadius: 16))
         }
+        .padding()
     }
 }
 

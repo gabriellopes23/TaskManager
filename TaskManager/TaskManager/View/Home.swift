@@ -38,10 +38,9 @@ struct Home: View {
                 ScrollView(.vertical) {
                     // Tasks View
                     TasksView(currentDate: $currentDate, searchTask: $searchTask, categoryFilter: $categoryFilter)
+                    
                 }
                 .hSpacing(.center)
-                .vSpacing(.center)
-                .scrollIndicators(.hidden)
             }
             .vSpacing(.top)
             .overlay(alignment: .bottomTrailing, content: {

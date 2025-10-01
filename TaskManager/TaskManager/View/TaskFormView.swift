@@ -271,6 +271,7 @@ extension TaskFormView {
                     taskTitle: taskTitle,
                     taskDescription: taskDescription,
                     creationDate: taskDate,
+                    completeDate: nil,
                     tint: taskColor,
                     category: taskCategory,
                     repeatOptions: taskRepeat,
